@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GyE - División Movimiento de Suelos</title>
+    <style>
+        :root {
+            --primary-black: #111111;
+            --accent-yellow: #FFD700;
+            --accent-red: #FF3B30;
+            --bg-color: #F8F9FA;
+            --card-bg: #FFFFFF;
+            --border-color: #E0E0E0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--primary-black);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-top: 5px solid var(--accent-yellow);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            margin-top: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            background-color: #FFF;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary-black);
+        }
+
+        .dynamic-section {
+            background: #F1F3F5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-black);
+            display: none; /* Oculto por defecto hasta que seleccione tarea */
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-black);
+            color: #FFF;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            margin-top: 10px;
+        }
+
+        button:active {
+            opacity: 0.8;
+        }
+
+        .history-list {
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .history-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.85rem;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            background: var(--accent-yellow);
+            color: #111;
+            margin-right: 5px;
+        }
+
+        .error-msg {
+            color: var(--accent-red);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <svg viewBox="0 0 500 200" width="160" style="margin: 0 auto; display: block;">
+            <text x="10" y="120" font-family="Arial Black" font-size="110" font-weight="bold" fill="#111">GyE</text>
+            <rect x="10" y="145" width="220" height="15" fill="#FFD700" />
+            <rect x="340" y="145" width="40" height="15" fill="#FF3B30" />
+            <rect x="390" y="145" width="40" height="15" fill="#FF3B30" />
+            <rect x="440" y="145" width="40" height="15" fill="#FF3B30" />
+        </svg>
+        <h1>DIVISIÓN SUELOS</h1>
+    </div>
+
+    <div class="card">
+        <form id="suelosForm">
+            <div class="form-group">
+                <label for="operario">Operario:</label>
+                <select id="operario" required>
+                    <option value="">Seleccione operario...</option>
+                    <option value="Miguel Coria">Miguel Coria</option>
+                    <option value="Gustavo Girolimetto">Gustavo Girolimetto</option>
+                    <option value="Ariel Girolimetto">Ariel Girolimetto</option>
+                    <option value="Alejandro Girolimetto">Alejandro Girolimetto</option>
+                    <option value="Ricardo Vera">Ricardo Vera</option>
+                    <option value="Ariel Ingaramo">Ariel Ingaramo</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Contraseña:</label>
+                <input type="password" id="password" placeholder="Ingrese su contraseña" required>
+                <div id="passError" class="error-msg">Contraseña incorrecta. (Temporal por defecto: 1234)</div>
+            </div>
+
+            <div class="form-group">
+                <label for="equipo">Vehículo o Máquina:</label>
+                <select id="equipo" required>
+                    <option value="">Seleccione vehículo o máquina...</option>
+                    <optgroup label="Camiones / Vehículos">
+                        <option value="Scania CMP980">Scania CMP980</option>
+                        <option value="Ford IBG812">Ford IBG812</option>
+                        <option value="Ford FVD203">Ford FVD203</option>
+                        <option value="Ford UIB827">Ford UIB827</option>
+                        <option value="Ford EMV701">Ford EMV701</option>
+                    </optgroup>
+                    <optgroup label="Maquinaria">
+                        <option value="Pala SEM">Pala SEM</option>
+                        <option value="Pala Michigan">Pala Michigan</option>
+                        <option value="Retropala Cat">Retropala Cat</option>
+                        <option value="Retropala New Holland">Retropala New Holland</option>
+                        <option value="Retroexcavadora Komatsu">Retroexcavadora Komatsu</option>
+                        <option value="Minicargadora Liangong">Minicargadora Liangong</option>
+                        <option value="Vibrocompactador Sakai">Vibrocompactador Sakai</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="tarea">Tarea realizada:</label>
+                <select id="tarea" required>
+                    <option value="">Seleccione tarea...</option>
+                    <optgroup label="Viajes / Materiales">
+                        <option value="Viajes de Tierra Negra">Viajes de Tierra Negra</option>
+                        <option value="Viajes de tierra Colorada">Viajes de tierra Colorada</option>
+                        <option value="Viajes de Ripio">Viajes de Ripio</option>
+                        <option value="Viajes de Arena">Viajes de Arena</option>
+                        <option value="Viajes de mugre a Cava">Viajes de mugre a Cava</option>
+                        <option value="Buscar Arena a Sauce">Buscar Arena a Sauce</option>
+                    </optgroup>
+                    <optgroup label="Servicio de Maquinaria / Movimiento">
+                        <option value="Servicio de Maquinaria">Servicio de Maquinaria / Horas de trabajo</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <!-- SECCIÓN DINÁMICA DE DATOS ADICIONALES -->
+            <div id="dynamicInfo" class="dynamic-section">
+                <h3 id="dynamicTitle" style="font-size: 0.95rem; margin-bottom: 12px; color: #111;">Detalles de la tarea</h3>
+                
+                <div class="form-group">
+                    <label for="cliente">Cliente:</label>
+                    <input type="text" id="cliente" placeholder="Nombre del cliente">
+                </div>
+
+                <div class="form-group">
+                    <label for="direccion">Dirección de Obra:</label>
+                    <input type="text" id="direccion" placeholder="Calle, número o referencia">
+                </div>
+
+                <div class="form-group">
+                    <label for="autorizo">Autorizó:</label>
+                    <input type="text" id="autorizo" placeholder="Quién autorizó el trabajo">
+                </div>
+
+                <div class="form-group">
+                    <label for="ordenTrabajo">Número de Orden de Trabajo:</label>
+                    <input type="text" id="ordenTrabajo" placeholder="N° de OT">
+                </div>
+
+                <div class="form-group">
+                    <label for="telefono">Teléfono de contacto:</label>
+                    <input type="tel" id="telefono" placeholder="Ej: 3496...">
+                </div>
+
+                <div class="form-group">
+                    <label for="precio">Precio / Importe ($):</label>
+                    <input type="number" id="precio" placeholder="Opcional">
+                </div>
+
+                <!-- Campo exclusivo para Maquinaria -->
+                <div class="form-group" id="groupHoras" style="display: none;">
+                    <label for="horas">Cantidad de Horas:</label>
+                    <input type="number" step="0.5" id="horas" placeholder="Ej: 3.5">
+                </div>
+
+                <!-- Campo exclusivo para Viajes -->
+                <div class="form-group" id="groupCantidadMaterial" style="display: none;">
+                    <label for="cantidadMaterial" id="labelCantidadMaterial">Cantidad (tn / m³):</label>
+                    <input type="number" step="0.1" id="cantidadMaterial" placeholder="Ej: 15">
+                </div>
+            </div>
+
+            <button type="submit">Registrar Operación</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <label>Registros recientes:</label>
+        <ul id="historyList" class="history-list">
+            <li class="history-item" style="color: #777; text-align: center;">No hay registros recientes.</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    const passwords = {
+        "Miguel Coria": "1234",
+        "Gustavo Girolimetto": "1234",
+        "Ariel Girolimetto": "1234",
+        "Alejandro Girolimetto": "1234",
+        "Ricardo Vera": "1234",
+        "Ariel Ingaramo": "1234"
+    };
+
+    const form = document.getElementById('suelosForm');
+    const tareaSelect = document.getElementById('tarea');
+    const dynamicInfo = document.getElementById('dynamicInfo');
+    const groupHoras = document.getElementById('groupHoras');
+    const groupCantidadMaterial = document.getElementById('groupCantidadMaterial');
+    const labelCantidadMaterial = document.getElementById('labelCantidadMaterial');
+    const historyList = document.getElementById('historyList');
+    const passError = document.getElementById('passError');
+
+    let registros = JSON.parse(localStorage.getItem('suelos_registros_v2')) || [];
+    renderHistory();
+
+    // Mostrar campos adicionales dinámicamente al cambiar la tarea
+    tareaSelect.addEventListener('change', function() {
+        const tarea = this.value;
+        if (!tarea) {
+            dynamicInfo.style.display = 'none';
+            return;
+        }
+
+        dynamicInfo.style.display = 'block';
+
+        if (tarea === 'Servicio de Maquinaria') {
+            groupHoras.style.display = 'block';
+            groupCantidadMaterial.style.display = 'none';
+        } else {
+            groupHoras.style.display = 'none';
+            groupCantidadMaterial.style.display = 'block';
+            if (tarea.includes('Arena') || tarea.includes('Ripio') || tarea.includes('Tierra')) {
+                labelCantidadMaterial.innerText = 'Cantidad (tn ó m³):';
+            } else {
+                labelCantidadMaterial.innerText = 'Cantidad estimada (viajes / m³):';
+            }
+        }
+    });
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const operario = document.getElementById('operario').value;
+        const password = document.getElementById('password').value;
+        const equipo = document.getElementById('equipo').value;
+        const tarea = document.getElementById('tarea').value;
+
+        if (passwords[operario] && passwords[operario] !== password) {
+            passError.style.display = 'block';
+            return;
+        }
+        passError.style.display = 'none';
+
+        const nuevoRegistro = {
+            operario,
+            equipo,
+            tarea,
+            cliente: document.getElementById('cliente').value || '-',
+            direccion: document.getElementById('direccion').value || '-',
+            autorizo: document.getElementById('autorizo').value || '-',
+            ordenTrabajo: document.getElementById('ordenTrabajo').value || '-',
+            telefono: document.getElementById('telefono').value || '-',
+            precio: document.getElementById('precio').value || '-',
+            horas: document.getElementById('horas').value || null,
+            cantidadMaterial: document.getElementById('cantidadMaterial').value || null,
+            fecha: new Date().toLocaleString()
+        };
+
+        registros.unshift(nuevoRegistro);
+        if(registros.length > 15) registros.pop();
+
+        localStorage.setItem('suelos_registros_v2', JSON.stringify(registros));
+        
+        renderHistory();
+        form.reset();
+        dynamicInfo.style.display = 'none';
+        alert('¡Operación registrada con éxito!');
+    });
+
+    function renderHistory() {
+        if (registros.length === 0) {
+            historyList.innerHTML = '<li class="history-item" style="color: #777; text-align: center;">No hay registros recientes.</li>';
+            return;
+        }
+
+        historyList.innerHTML = '';
+        registros.forEach(reg => {
+            let detalleExtra = '';
+            if (reg.horas) detalleExtra += ` | ⏱️ ${reg.horas} hs`;
+            if (reg.cantidadMaterial) detalleExtra += ` | 📦 ${reg.cantidadMaterial} un`;
+            if (reg.cliente !== '-') detalleExtra += ` | 👤 ${reg.cliente}`;
+
+            const li = document.createElement('li');
+            li.className = 'history-item';
+            li.innerHTML = `<strong>${reg.operario}</strong> (${reg.equipo})<br>` +
+                           `<span class="badge">${reg.tarea}</span>` +
+                           `<span style="color: #333; font-size: 0.8rem;">${detalleExtra}</span><br>` +
+                           `<span style="color: #888; font-size: 0.75rem;">OT: ${reg.ordenTrabajo} | Dir: ${reg.direccion} | ${reg.fecha}</span>`;
+            historyList.appendChild(li);
+        });
+    }
+</script>
+
+</body>
+</html>
