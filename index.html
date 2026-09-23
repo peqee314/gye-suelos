@@ -24,7 +24,7 @@
         body {
             background-color: var(--bg-color);
             color: var(--primary-black);
-            padding: 20px;
+            padding: 15px;
         }
 
         .container {
@@ -34,26 +34,26 @@
 
         .header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             background: var(--card-bg);
-            padding: 20px;
+            padding: 15px;
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             border-top: 5px solid var(--accent-yellow);
         }
 
         .header h1 {
-            font-size: 1.5rem;
-            margin-top: 10px;
+            font-size: 1.3rem;
+            margin-top: 8px;
             letter-spacing: -0.5px;
         }
 
         .card {
             background: var(--card-bg);
-            padding: 20px;
+            padding: 15px;
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         /* Secciones ocultas para manejar los pasos */
@@ -65,22 +65,22 @@
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         label {
             display: block;
             font-weight: 600;
-            margin-bottom: 6px;
-            font-size: 0.9rem;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
         }
 
         select, input {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             background-color: #FFF;
         }
 
@@ -91,26 +91,26 @@
 
         .dynamic-section {
             background: #F1F3F5;
-            padding: 15px;
+            padding: 12px;
             border-radius: 8px;
-            margin-top: 15px;
-            margin-bottom: 15px;
+            margin-top: 12px;
+            margin-bottom: 12px;
             border-left: 4px solid var(--primary-black);
             display: none;
         }
 
         button, .btn-action {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background-color: var(--primary-black);
             color: #FFF;
             border: none;
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: bold;
             cursor: pointer;
             transition: opacity 0.2s;
-            margin-top: 10px;
+            margin-top: 8px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
@@ -124,17 +124,17 @@
         .drivers-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 12px;
-            margin-top: 15px;
+            gap: 10px;
+            margin-top: 12px;
         }
 
         .driver-btn {
             background-color: #FFF;
             border: 2px solid var(--border-color);
             color: var(--primary-black);
-            padding: 16px;
+            padding: 14px;
             border-radius: 10px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             text-align: left;
             cursor: pointer;
@@ -152,58 +152,63 @@
 
         .driver-btn::after {
             content: "➔";
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #888;
         }
 
-        /* Estilos para los vehículos con imagen (Paso 2) */
+        /* Estilos compactos para los vehículos con imagen en celulares (Paso 2) */
         .vehicles-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 15px;
-            margin-top: 15px;
+            gap: 10px;
+            margin-top: 12px;
         }
 
         .vehicle-card {
             background: #FFF;
             border: 1px solid var(--border-color);
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
             display: flex;
-            flex-direction: column;
-        }
-
-        .vehicle-card img {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-            background-color: #eee;
-        }
-
-        .vehicle-card-content {
-            padding: 12px;
-            display: flex;
-            justify-content: space-between;
+            flex-direction: row; /* Diseño horizontal para aprovechar mejor la pantalla del celular */
             align-items: center;
         }
 
+        .vehicle-card img {
+            width: 110px;
+            height: 85px;
+            object-fit: cover;
+            background-color: #eee;
+            flex-shrink: 0;
+        }
+
+        .vehicle-card-content {
+            padding: 10px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-grow: 1;
+        }
+
         .vehicle-card-content h3 {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: var(--primary-black);
+            margin-right: 5px;
         }
 
         .select-vehicle-btn {
             background-color: var(--accent-yellow);
             color: var(--primary-black);
             border: none;
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             width: auto;
             margin-top: 0;
+            white-space: nowrap;
         }
 
         .select-vehicle-btn:hover {
@@ -211,20 +216,20 @@
         }
 
         .section-title {
-            font-size: 1.1rem;
-            margin-bottom: 15px;
+            font-size: 1rem;
+            margin-bottom: 12px;
             font-weight: bold;
             color: var(--primary-black);
             border-bottom: 2px solid var(--accent-yellow);
-            padding-bottom: 5px;
+            padding-bottom: 4px;
         }
 
         .user-info-bar {
             background: #F1F3F5;
-            padding: 10px 15px;
+            padding: 8px 12px;
             border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
+            margin-bottom: 12px;
+            font-size: 0.85rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -234,8 +239,8 @@
             background: transparent;
             border: 1px solid #ccc;
             color: #333;
-            padding: 6px 12px;
-            font-size: 0.8rem;
+            padding: 4px 10px;
+            font-size: 0.75rem;
             width: auto;
             margin-top: 0;
             border-radius: 6px;
@@ -253,27 +258,27 @@
             background-color: rgba(0,0,0,0.5);
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 15px;
         }
 
         .modal-content {
             background-color: #fff;
-            padding: 25px;
+            padding: 20px;
             border-radius: 12px;
-            max-width: 400px;
+            max-width: 350px;
             width: 100%;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         .history-list {
             list-style: none;
-            margin-top: 10px;
+            margin-top: 8px;
         }
 
         .history-item {
-            padding: 12px;
+            padding: 10px;
             border-bottom: 1px solid var(--border-color);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
         .history-item:last-child {
@@ -282,19 +287,19 @@
 
         .badge {
             display: inline-block;
-            padding: 3px 8px;
+            padding: 2px 6px;
             border-radius: 4px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: bold;
             background: var(--accent-yellow);
             color: #111;
-            margin-right: 5px;
+            margin-right: 4px;
         }
 
         .error-msg {
             color: var(--accent-red);
-            font-size: 0.85rem;
-            margin-top: 5px;
+            font-size: 0.8rem;
+            margin-top: 4px;
             display: none;
         }
     </style>
@@ -303,7 +308,7 @@
 
 <div class="container">
     <div class="header">
-        <svg viewBox="0 0 500 200" width="160" style="margin: 0 auto; display: block;">
+        <svg viewBox="0 0 500 200" width="130" style="margin: 0 auto; display: block;">
             <text x="10" y="120" font-family="Arial Black" font-size="110" font-weight="bold" fill="#111">GyE</text>
             <rect x="10" y="145" width="220" height="15" fill="#FFD700" />
             <rect x="340" y="145" width="40" height="15" fill="#FF3B30" />
@@ -317,11 +322,11 @@
     <div id="step1" class="card step-section active">
         <div class="section-title">Seleccione su usuario (Chofer)</div>
         <div class="drivers-grid" id="driversContainer">
-            <!-- Se generan mediante JavaScript -->
+            <!-- Generado por JS -->
         </div>
     </div>
 
-    <!-- PASO 2: SELECCIÓN DE VEHÍCULO / MÁQUINA CON IMAGEN -->
+    <!-- PASO 2: SELECCIÓN DE VEHÍCULO / MÁQUINA CON IMAGEN COMPACTA -->
     <div id="step2" class="card step-section">
         <div class="user-info-bar">
             <span>Operario: <strong id="currentDriverDisplay"></strong></span>
@@ -329,7 +334,7 @@
         </div>
         <div class="section-title">Seleccione Vehículo o Máquina</div>
         <div class="vehicles-grid" id="vehiclesContainer">
-            <!-- Se generan mediante JavaScript con sus respectivas fotos -->
+            <!-- Generado por JS -->
         </div>
     </div>
 
@@ -340,7 +345,7 @@
                 <span style="display:block;">Operario: <strong id="finalDriverDisplay"></strong></span>
                 <span style="display:block;">Vehículo: <strong id="finalVehicleDisplay" style="color: #d97706;"></strong></span>
             </div>
-            <button type="button" class="back-btn" onclick="goToStep(2)">Cambiar Vehículo</button>
+            <button type="button" class="back-btn" onclick="goToStep(2)">Cambiar</button>
         </div>
 
         <form id="suelosForm">
@@ -364,7 +369,7 @@
 
             <!-- SECCIÓN DINÁMICA DE DATOS ADICIONALES -->
             <div id="dynamicInfo" class="dynamic-section">
-                <h3 id="dynamicTitle" style="font-size: 0.95rem; margin-bottom: 12px; color: #111;">Detalles de la tarea</h3>
+                <h3 id="dynamicTitle" style="font-size: 0.9rem; margin-bottom: 10px; color: #111;">Detalles de la tarea</h3>
                 
                 <div class="form-group">
                     <label for="cliente">Cliente:</label>
@@ -416,12 +421,12 @@
     <!-- MODAL DE CONTRASEÑA -->
     <div id="passwordModal" class="modal">
         <div class="modal-content">
-            <h3 style="margin-bottom: 15px; font-size: 1.1rem;">Contraseña de <span id="modalDriverName"></span></h3>
+            <h3 style="margin-bottom: 12px; font-size: 1rem;">Contraseña de <span id="modalDriverName"></span></h3>
             <div class="form-group">
                 <input type="password" id="modalPassword" placeholder="Ingrese su contraseña">
                 <div id="passError" class="error-msg">Contraseña incorrecta. (Por defecto: 1234)</div>
             </div>
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <div style="display: flex; gap: 10px; margin-top: 12px;">
                 <button type="button" onclick="closeModal()" style="background-color: #ccc; margin-top:0;">Cancelar</button>
                 <button type="button" onclick="verifyPassword()" style="margin-top:0;">Ingresar</button>
             </div>
@@ -474,7 +479,6 @@
     let selectedDriver = "";
     let selectedVehicle = "";
 
-    // Elementos del DOM
     const driversContainer = document.getElementById('driversContainer');
     const vehiclesContainer = document.getElementById('vehiclesContainer');
     const passwordModal = document.getElementById('passwordModal');
@@ -495,7 +499,6 @@
 
     let registros = JSON.parse(localStorage.getItem('suelos_registros_v3')) || [];
 
-    // Inicializar vistas
     initApp();
 
     function initApp() {
@@ -522,7 +525,7 @@
             const card = document.createElement('div');
             card.className = 'vehicle-card';
             card.innerHTML = `
-                <img src="${v.img}" alt="${v.name}" onerror="this.src='https://via.placeholder.com/400x160?text=Sin+Imagen'">
+                <img src="${v.img}" alt="${v.name}" onerror="this.src='https://via.placeholder.com/110x85?text=Sin+Img'">
                 <div class="vehicle-card-content">
                     <h3>${v.name}</h3>
                     <button type="button" class="select-vehicle-btn" onclick="selectVehicle('${v.name}')">Elegir</button>
@@ -571,7 +574,6 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Mostrar campos adicionales dinámicamente al cambiar la tarea
     tareaSelect.addEventListener('change', function() {
         const tarea = this.value;
         if (!tarea) {
@@ -625,7 +627,6 @@
         dynamicInfo.style.display = 'none';
         alert('¡Operación registrada con éxito!');
         
-        // Volver al paso 1 para el siguiente operario
         goToStep(1);
     });
 
@@ -646,8 +647,8 @@
             li.className = 'history-item';
             li.innerHTML = `<strong>${reg.operario}</strong> (${reg.equipo})<br>` +
                            `<span class="badge">${reg.tarea}</span>` +
-                           `<span style="color: #333; font-size: 0.8rem;">${detalleExtra}</span><br>` +
-                           `<span style="color: #888; font-size: 0.75rem;">OT: ${reg.ordenTrabajo} | Dir: ${reg.direccion} | ${reg.fecha}</span>`;
+                           `<span style="color: #333; font-size: 0.75rem;">${detalleExtra}</span><br>` +
+                           `<span style="color: #888; font-size: 0.7rem;">OT: ${reg.ordenTrabajo} | Dir: ${reg.direccion} | ${reg.fecha}</span>`;
             historyList.appendChild(li);
         });
     }
