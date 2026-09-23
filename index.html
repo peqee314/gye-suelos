@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GyE - División Movimiento de Suelos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
             --primary-black: #111111;
@@ -14,271 +15,198 @@
             --border-color: #E0E0E0;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
         body {
             background-color: var(--bg-color);
             color: var(--primary-black);
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 25px;
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border-top: 5px solid var(--accent-yellow);
-        }
-
-        .header h1 {
-            font-size: 1.5rem;
-            margin-top: 10px;
-            letter-spacing: -0.5px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 6px;
-            font-size: 0.9rem;
-        }
-
-        select, input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            background-color: #FFF;
-        }
-
-        select:focus, input:focus {
-            outline: none;
-            border-color: var(--primary-black);
-        }
-
-        .dynamic-section {
-            background: #F1F3F5;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            margin-bottom: 15px;
-            border-left: 4px solid var(--primary-black);
-            display: none; /* Oculto por defecto hasta que seleccione tarea */
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--primary-black);
-            color: #FFF;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: opacity 0.2s;
-            margin-top: 10px;
-        }
-
-        button:active {
-            opacity: 0.8;
-        }
-
-        .history-list {
-            list-style: none;
-            margin-top: 10px;
-        }
-
-        .history-item {
-            padding: 12px;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.85rem;
-        }
-
-        .history-item:last-child {
-            border-bottom: none;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            background: var(--accent-yellow);
-            color: #111;
-            margin-right: 5px;
-        }
-
-        .error-msg {
-            color: var(--accent-red);
-            font-size: 0.85rem;
-            margin-top: 5px;
+        .step-screen {
             display: none;
+        }
+
+        .step-screen.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
-<body>
+<body class="p-4 sm:p-6">
 
-<div class="container">
-    <div class="header">
-        <svg viewBox="0 0 500 200" width="160" style="margin: 0 auto; display: block;">
+<div class="max-w-xl mx-auto">
+    <!-- Header Logo / Title -->
+    <div class="text-center mb-6 bg-white p-5 rounded-2xl shadow-sm border-t-8 border-yellow-400">
+        <svg viewBox="0 0 500 200" width="150" class="mx-auto block">
             <text x="10" y="120" font-family="Arial Black" font-size="110" font-weight="bold" fill="#111">GyE</text>
             <rect x="10" y="145" width="220" height="15" fill="#FFD700" />
             <rect x="340" y="145" width="40" height="15" fill="#FF3B30" />
             <rect x="390" y="145" width="40" height="15" fill="#FF3B30" />
             <rect x="440" y="145" width="40" height="15" fill="#FF3B30" />
         </svg>
-        <h1>DIVISIÓN SUELOS</h1>
+        <h1 class="text-xl font-black tracking-tight mt-2 text-stone-900">DIVISIÓN SUELOS</h1>
+        <div id="breadcrumb" class="text-xs text-stone-500 mt-1 uppercase font-semibold tracking-wider"></div>
     </div>
 
-    <div class="card">
-        <form id="suelosForm">
-            <div class="form-group">
-                <label for="operario">Operario:</label>
-                <select id="operario" required>
-                    <option value="">Seleccione operario...</option>
-                    <option value="Miguel Coria">Miguel Coria</option>
-                    <option value="Gustavo Girolimetto">Gustavo Girolimetto</option>
-                    <option value="Ariel Girolimetto">Ariel Girolimetto</option>
-                    <option value="Alejandro Girolimetto">Alejandro Girolimetto</option>
-                    <option value="Ricardo Vera">Ricardo Vera</option>
-                    <option value="Ariel Ingaramo">Ariel Ingaramo</option>
-                </select>
+    <!-- PASO 1: Selección de Operario / Chofer -->
+    <div id="step1" class="step-screen active">
+        <div class="bg-white p-6 rounded-2xl shadow-sm mb-6 border border-stone-100">
+            <h2 class="text-lg font-bold mb-4 text-stone-800 flex items-center gap-2">
+                <span>👤</span> Seleccione su Operario
+            </h2>
+            <div id="driversList" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- Generado dinámicamente por JS -->
             </div>
-
-            <div class="form-group">
-                <label for="password">Contraseña:</label>
-                <input type="password" id="password" placeholder="Ingrese su contraseña" required>
-                <div id="passError" class="error-msg">Contraseña incorrecta. (Temporal por defecto: 1234)</div>
-            </div>
-
-            <div class="form-group">
-                <label for="equipo">Vehículo o Máquina:</label>
-                <select id="equipo" required>
-                    <option value="">Seleccione vehículo o máquina...</option>
-                    <optgroup label="Camiones / Vehículos">
-                        <option value="Scania CMP980">Scania CMP980</option>
-                        <option value="Ford IBG812">Ford IBG812</option>
-                        <option value="Ford FVD203">Ford FVD203</option>
-                        <option value="Ford UIB827">Ford UIB827</option>
-                        <option value="Ford EMV701">Ford EMV701</option>
-                    </optgroup>
-                    <optgroup label="Maquinaria">
-                        <option value="Pala SEM">Pala SEM</option>
-                        <option value="Pala Michigan">Pala Michigan</option>
-                        <option value="Retropala Cat">Retropala Cat</option>
-                        <option value="Retropala New Holland">Retropala New Holland</option>
-                        <option value="Retroexcavadora Komatsu">Retroexcavadora Komatsu</option>
-                        <option value="Minicargadora Liangong">Minicargadora Liangong</option>
-                        <option value="Vibrocompactador Sakai">Vibrocompactador Sakai</option>
-                    </optgroup>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="tarea">Tarea realizada:</label>
-                <select id="tarea" required>
-                    <option value="">Seleccione tarea...</option>
-                    <optgroup label="Viajes / Materiales">
-                        <option value="Viajes de Tierra Negra">Viajes de Tierra Negra</option>
-                        <option value="Viajes de tierra Colorada">Viajes de tierra Colorada</option>
-                        <option value="Viajes de Ripio">Viajes de Ripio</option>
-                        <option value="Viajes de Arena">Viajes de Arena</option>
-                        <option value="Viajes de mugre a Cava">Viajes de mugre a Cava</option>
-                        <option value="Buscar Arena a Sauce">Buscar Arena a Sauce</option>
-                    </optgroup>
-                    <optgroup label="Servicio de Maquinaria / Movimiento">
-                        <option value="Servicio de Maquinaria">Servicio de Maquinaria / Horas de trabajo</option>
-                    </optgroup>
-                </select>
-            </div>
-
-            <!-- SECCIÓN DINÁMICA DE DATOS ADICIONALES -->
-            <div id="dynamicInfo" class="dynamic-section">
-                <h3 id="dynamicTitle" style="font-size: 0.95rem; margin-bottom: 12px; color: #111;">Detalles de la tarea</h3>
-                
-                <div class="form-group">
-                    <label for="cliente">Cliente:</label>
-                    <input type="text" id="cliente" placeholder="Nombre del cliente">
-                </div>
-
-                <div class="form-group">
-                    <label for="direccion">Dirección de Obra:</label>
-                    <input type="text" id="direccion" placeholder="Calle, número o referencia">
-                </div>
-
-                <div class="form-group">
-                    <label for="autorizo">Autorizó:</label>
-                    <input type="text" id="autorizo" placeholder="Quién autorizó el trabajo">
-                </div>
-
-                <div class="form-group">
-                    <label for="ordenTrabajo">Número de Orden de Trabajo:</label>
-                    <input type="text" id="ordenTrabajo" placeholder="N° de OT">
-                </div>
-
-                <div class="form-group">
-                    <label for="telefono">Teléfono de contacto:</label>
-                    <input type="tel" id="telefono" placeholder="Ej: 3496...">
-                </div>
-
-                <div class="form-group">
-                    <label for="precio">Precio / Importe ($):</label>
-                    <input type="number" id="precio" placeholder="Opcional">
-                </div>
-
-                <!-- Campo exclusivo para Maquinaria -->
-                <div class="form-group" id="groupHoras" style="display: none;">
-                    <label for="horas">Cantidad de Horas:</label>
-                    <input type="number" step="0.5" id="horas" placeholder="Ej: 3.5">
-                </div>
-
-                <!-- Campo exclusivo para Viajes -->
-                <div class="form-group" id="groupCantidadMaterial" style="display: none;">
-                    <label for="cantidadMaterial" id="labelCantidadMaterial">Cantidad (tn / m³):</label>
-                    <input type="number" step="0.1" id="cantidadMaterial" placeholder="Ej: 15">
-                </div>
-            </div>
-
-            <button type="submit">Registrar Operación</button>
-        </form>
+        </div>
     </div>
 
-    <div class="card">
-        <label>Registros recientes:</label>
-        <ul id="historyList" class="history-list">
-            <li class="history-item" style="color: #777; text-align: center;">No hay registros recientes.</li>
+    <!-- PASO 2: Selección de Vehículo / Máquina -->
+    <div id="step2" class="step-screen">
+        <div class="bg-white p-6 rounded-2xl shadow-sm mb-6 border border-stone-100">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-stone-800 flex items-center gap-2">
+                    <span>🚜</span> Seleccione Vehículo o Máquina
+                </h2>
+                <button type="button" onclick="goToStep(1)" class="text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold px-3 py-1.5 rounded-lg transition">
+                    ← Cambiar Operario
+                </button>
+            </div>
+            
+            <div class="mb-4">
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-2.5 py-1 rounded-md">Camiones / Vehículos</span>
+                <div id="vehiclesTrucks" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3"></div>
+            </div>
+
+            <div class="mt-6">
+                <span class="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md">Maquinaria Pesada</span>
+                <div id="vehiclesMachines" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PASO 3: Formulario de Datos del Trabajo -->
+    <div id="step3" class="step-screen">
+        <div class="bg-white p-6 rounded-2xl shadow-sm mb-6 border border-stone-100">
+            <div class="flex justify-between items-center mb-4 border-b pb-3">
+                <div>
+                    <span id="selectedBadge" class="text-xs font-bold bg-amber-400 text-stone-900 px-2.5 py-1 rounded-full"></span>
+                    <span id="selectedVehicleBadge" class="text-xs font-bold bg-stone-800 text-white px-2.5 py-1 rounded-full ml-1"></span>
+                </div>
+                <button type="button" onclick="goToStep(2)" class="text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold px-3 py-1.5 rounded-lg transition">
+                    ← Cambiar Vehículo
+                </button>
+            </div>
+
+            <form id="suelosForm" class="space-y-4">
+                <div>
+                    <label class="block font-bold text-sm mb-1 text-stone-700" for="tarea">Tarea realizada:</label>
+                    <select id="tarea" required class="w-full p-3 border border-stone-200 rounded-xl bg-stone-50 font-medium focus:outline-none focus:border-stone-900 transition">
+                        <option value="">Seleccione tarea...</option>
+                        <optgroup label="Viajes / Materiales">
+                            <option value="Viajes de Tierra Negra">Viajes de Tierra Negra</option>
+                            <option value="Viajes de tierra Colorada">Viajes de tierra Colorada</option>
+                            <option value="Viajes de Ripio">Viajes de Ripio</option>
+                            <option value="Viajes de Arena">Viajes de Arena</option>
+                            <option value="Viajes de mugre a Cava">Viajes de mugre a Cava</option>
+                            <option value="Buscar Arena a Sauce">Buscar Arena a Sauce</option>
+                        </optgroup>
+                        <optgroup label="Servicio de Maquinaria / Movimiento">
+                            <option value="Servicio de Maquinaria">Servicio de Maquinaria / Horas de trabajo</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <!-- SECCIÓN DINÁMICA DE DATOS ADICIONALES -->
+                <div id="dynamicInfo" class="bg-stone-50 p-4 rounded-xl border-l-4 border-stone-900 space-y-4 hidden">
+                    <h3 id="dynamicTitle" class="text-sm font-bold text-stone-900">Detalles de la tarea</h3>
+                    
+                    <div>
+                        <label class="block font-bold text-xs mb-1 text-stone-600" for="cliente">Cliente:</label>
+                        <input type="text" id="cliente" placeholder="Nombre del cliente" class="w-full p-3 border border-stone-200 rounded-xl bg-white text-sm focus:outline-none focus:border-stone-900">
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-xs mb-1 text-stone-600" for="direccion">Dirección de Obra:</label>
+                        <input type="text" id="direccion" placeholder="Calle, número o referencia" class="w-full p-3 border border-stone-200 rounded-xl bg-white text-sm focus:outline-none focus:border-stone-900">
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-xs mb-1 text-stone-600" for="autorizo">Autorizó:</label>
+                        <input type="text" id="autorizo" placeholder="Quién autorizó el trabajo" class="w-full p-3 border border-stone-200 rounded-xl bg-white text-sm focus:outline-none focus:border-stone-900">
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-xs mb-1 text-stone-600" for="ordenTrabajo">Número de Orden de Trabajo:</label>
+                        <input type="text" id="ordenTrabajo" placeholder="N° de OT" class="w-full p-3 border border-stone-200 rounded-xl bg-white text-sm focus:outline-none focus:border-stone-900">
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-xs mb-1 text-stone-600" for="telefono">Teléfono de contacto:</label>
+                        <input type="tel" id="telefono" placeholder="Ej: 3496..." class="w-full p-3 border border-stone-200 rounded-xl bg-white text-sm focus:outline-none focus:border-stone-900">
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-xs mb-1 text-stone-600" for="precio">Precio / Importe ($):</label>
+                        <input type="number" id="precio" placeholder="Opcional" class="w-full p-3 border border-stone-200 rounded-xl bg-white text-sm focus:outline-none focus:border-stone-900">
+                    </div>
+
+                    <div id="groupHoras" class="hidden">
+                        <label class="block font-bold text-xs mb-1 text-stone-600" for="horas">Cantidad de Horas:</label>
+                        <input type="number" step="0.5" id="horas" placeholder="Ej: 3.5" class="w-full p-3 border border-stone-200 rounded-xl bg-white text-sm focus:outline-none focus:border-stone-900">
+                    </div>
+
+                    <div id="groupCantidadMaterial" class="hidden">
+                        <label class="block font-bold text-xs mb-1 text-stone-600" id="labelCantidadMaterial">Cantidad (tn / m³):</label>
+                        <input type="number" step="0.1" id="cantidadMaterial" placeholder="Ej: 15" class="w-full p-3 border border-stone-200 rounded-xl bg-white text-sm focus:outline-none focus:border-stone-900">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-4 bg-stone-900 hover:bg-stone-800 text-white font-bold rounded-xl shadow-md transition active:scale-[0.99] text-base mt-2">
+                    Registrar Operación
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Historial Reciente -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-100">
+        <label class="font-bold text-sm text-stone-700 block mb-3">Registros recientes:</label>
+        <ul id="historyList" class="divide-y divide-stone-100 text-sm">
+            <li class="py-3 text-stone-400 text-center">No hay registros recientes.</li>
         </ul>
     </div>
 </div>
 
+<!-- Modal Contraseña -->
+<div id="passwordModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl animate-[fadeIn_0.2s_ease-in-out]">
+        <div class="text-center mb-4">
+            <span class="text-3xl">🔐</span>
+            <h3 id="modalDriverName" class="text-lg font-black text-stone-900 mt-2">Ingrese contraseña</h3>
+            <p class="text-xs text-stone-500">Credencial de acceso para operario</p>
+        </div>
+        <form id="passwordForm" onsubmit="handlePasswordSubmit(event)">
+            <input type="password" id="modalPasswordInput" placeholder="Contraseña (por defecto: 1234)" required class="w-full p-3.5 border border-stone-200 rounded-xl text-center text-lg tracking-widest bg-stone-50 focus:outline-none focus:border-stone-900 mb-2">
+            <div id="passError" class="text-red-500 text-xs font-semibold text-center mb-3 hidden">Contraseña incorrecta (Pruebe con 1234)</div>
+            <div class="flex gap-2">
+                <button type="button" onclick="closePasswordModal()" class="w-1/2 py-3 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded-xl text-sm transition">Cancelar</button>
+                <button type="submit" class="w-1/2 py-3 bg-stone-900 hover:bg-stone-800 text-white font-bold rounded-xl text-sm transition">Acceder</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Notificación Flotante de Éxito -->
+<div id="toastNotification" class="fixed bottom-5 right-5 bg-stone-900 text-white px-5 py-3 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2 font-bold text-sm">
+    <span>✅</span> <span id="toastText">Operación registrada con éxito</span>
+</div>
+
 <script>
+    // Configuración de datos de operarios y claves
     const passwords = {
         "Miguel Coria": "1234",
         "Gustavo Girolimetto": "1234",
@@ -288,34 +216,179 @@
         "Ariel Ingaramo": "1234"
     };
 
-    const form = document.getElementById('suelosForm');
+    const drivers = Object.keys(passwords);
+
+    const vehiclesTrucks = [
+        { name: "Scania CMP980", img: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&q=80" },
+        { name: "Ford IBG812", img: "https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=400&q=80" },
+        { name: "Ford FVD203", img: "https://images.unsplash.com/photo-1559297436-26f183cfbc62?w=400&q=80" },
+        { name: "Ford UIB827", img: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=400&q=80" },
+        { name: "Ford EMV701", img: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=400&q=80" }
+    ];
+
+    const vehiclesMachines = [
+        { name: "Pala SEM", img: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&q=80" },
+        { name: "Pala Michigan", img: "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=400&q=80" },
+        { name: "Retropala Cat", img: "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=400&q=80" },
+        { name: "Retropala New Holland", img: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=80" },
+        { name: "Retroexcavadora Komatsu", img: "https://images.unsplash.com/photo-1535732820297-1f0256d25683?w=400&q=80" },
+        { name: "Minicargadora Liangong", img: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400&q=80" },
+        { name: "Vibrocompactador Sakai", img: "https://images.unsplash.com/photo-1579482813154-1fc698b965f8?w=400&q=80" }
+    ];
+
+    // Estado de sesión actual
+    let currentSession = {
+        driver: null,
+        vehicle: null
+    };
+
+    let registros = JSON.parse(localStorage.getItem('suelos_registros_v3')) || [];
+
+    // Referencias DOM
+    const driversListEl = document.getElementById('driversList');
+    const vehiclesTrucksEl = document.getElementById('vehiclesTrucks');
+    const vehiclesMachinesEl = document.getElementById('vehiclesMachines');
+    const breadcrumbEl = document.getElementById('breadcrumb');
+    const passwordModal = document.getElementById('passwordModal');
+    const modalDriverName = document.getElementById('modalDriverName');
+    const modalPasswordInput = document.getElementById('modalPasswordInput');
+    const passError = document.getElementById('passError');
+    const historyList = document.getElementById('historyList');
+    const suelosForm = document.getElementById('suelosForm');
     const tareaSelect = document.getElementById('tarea');
     const dynamicInfo = document.getElementById('dynamicInfo');
     const groupHoras = document.getElementById('groupHoras');
     const groupCantidadMaterial = document.getElementById('groupCantidadMaterial');
     const labelCantidadMaterial = document.getElementById('labelCantidadMaterial');
-    const historyList = document.getElementById('historyList');
-    const passError = document.getElementById('passError');
+    const selectedBadge = document.getElementById('selectedBadge');
+    const selectedVehicleBadge = document.getElementById('selectedVehicleBadge');
+    const toastNotification = document.getElementById('toastNotification');
+    const toastText = document.getElementById('toastText');
 
-    let registros = JSON.parse(localStorage.getItem('suelos_registros_v2')) || [];
-    renderHistory();
+    let pendingDriver = null;
 
-    // Mostrar campos adicionales dinámicamente al cambiar la tarea
+    // Inicialización al cargar la página
+    window.addEventListener('DOMContentLoaded', () => {
+        renderDrivers();
+        renderVehicles();
+        renderHistory();
+        goToStep(1);
+    });
+
+    // Renderizar botones de operarios
+    function renderDrivers() {
+        driversListEl.innerHTML = '';
+        drivers.forEach(driver => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'p-4 bg-stone-50 hover:bg-stone-900 hover:text-white text-stone-900 border border-stone-200 rounded-xl font-bold text-left transition flex items-center justify-between group shadow-xs';
+            btn.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-amber-400 text-stone-900 flex items-center justify-center font-black text-sm">👤</div>
+                    <span class="text-sm font-semibold">${driver}</span>
+                </div>
+                <span class="text-stone-400 group-hover:text-amber-400 text-sm font-bold">→</span>
+            `;
+            btn.onclick = () => openPasswordModal(driver);
+            driversListEl.appendChild(btn);
+        });
+    }
+
+    // Renderizar vehículos con imágenes
+    function renderVehicles() {
+        vehiclesTrucksEl.innerHTML = '';
+        vehiclesTrucks.forEach(v => {
+            vehiclesTrucksEl.innerHTML += createVehicleCard(v);
+        });
+
+        vehiclesMachinesEl.innerHTML = '';
+        vehiclesMachines.forEach(v => {
+            vehiclesMachinesEl.innerHTML += createVehicleCard(v);
+        });
+    }
+
+    function createVehicleCard(vehicle) {
+        return `
+            <div onclick="selectVehicle('${vehicle.name}')" class="bg-stone-50 hover:bg-stone-900 hover:text-white text-stone-900 border border-stone-200 rounded-xl overflow-hidden cursor-pointer transition shadow-xs group flex flex-col">
+                <div class="h-28 overflow-hidden bg-stone-200 relative">
+                    <img src="${vehicle.img}" alt="${vehicle.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.src='https://placehold.co/400x200/111111/FFFFFF?text=GyE+Movimiento'">
+                    <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition"></div>
+                </div>
+                <div class="p-3 flex justify-between items-center">
+                    <span class="font-bold text-xs">${vehicle.name}</span>
+                    <span class="text-xs bg-amber-400 text-stone-900 px-2 py-0.5 rounded font-bold group-hover:bg-amber-400">Elegir</span>
+                </div>
+            </div>
+        `;
+    }
+
+    // Modal password logic
+    function openPasswordModal(driver) {
+        pendingDriver = driver;
+        modalDriverName.innerText = driver;
+        modalPasswordInput.value = '';
+        passError.classList.add('hidden');
+        passwordModal.classList.remove('hidden');
+        setTimeout(() => modalPasswordInput.focus(), 100);
+    }
+
+    function closePasswordModal() {
+        passwordModal.classList.add('hidden');
+        pendingDriver = null;
+    }
+
+    function handlePasswordSubmit(e) {
+        e.preventDefault();
+        const pass = modalPasswordInput.value;
+        if (passwords[pendingDriver] && passwords[pendingDriver] === pass) {
+            currentSession.driver = pendingDriver;
+            closePasswordModal();
+            goToStep(2);
+        } else {
+            passError.classList.remove('hidden');
+            modalPasswordInput.focus();
+        }
+    }
+
+    // Selección de vehículo
+    function selectVehicle(vehicleName) {
+        currentSession.vehicle = vehicleName;
+        selectedBadge.innerText = `Operario: ${currentSession.driver}`;
+        selectedVehicleBadge.innerText = `Vehículo: ${currentSession.vehicle}`;
+        goToStep(3);
+    }
+
+    // Control de Pantallas / Pasos
+    function goToStep(stepNumber) {
+        document.querySelectorAll('.step-screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(`step${stepNumber}`).classList.add('active');
+
+        if (stepNumber === 1) {
+            breadcrumbEl.innerText = "Paso 1 de 3 • Identificación de Operario";
+        } else if (stepNumber === 2) {
+            breadcrumbEl.innerText = `Paso 2 de 3 • Operario: ${currentSession.driver}`;
+        } else if (stepNumber === 3) {
+            breadcrumbEl.innerText = `Paso 3 de 3 • Registro de Trabajo`;
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Lógica de Tareas Dinámicas
     tareaSelect.addEventListener('change', function() {
         const tarea = this.value;
         if (!tarea) {
-            dynamicInfo.style.display = 'none';
+            dynamicInfo.classList.add('hidden');
             return;
         }
 
-        dynamicInfo.style.display = 'block';
+        dynamicInfo.classList.remove('hidden');
 
         if (tarea === 'Servicio de Maquinaria') {
-            groupHoras.style.display = 'block';
-            groupCantidadMaterial.style.display = 'none';
+            groupHoras.classList.remove('hidden');
+            groupCantidadMaterial.classList.add('hidden');
         } else {
-            groupHoras.style.display = 'none';
-            groupCantidadMaterial.style.display = 'block';
+            groupHoras.classList.add('hidden');
+            groupCantidadMaterial.classList.remove('hidden');
             if (tarea.includes('Arena') || tarea.includes('Ripio') || tarea.includes('Tierra')) {
                 labelCantidadMaterial.innerText = 'Cantidad (tn ó m³):';
             } else {
@@ -324,24 +397,14 @@
         }
     });
 
-    form.addEventListener('submit', function(e) {
+    // Envío del Formulario Final
+    suelosForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        
-        const operario = document.getElementById('operario').value;
-        const password = document.getElementById('password').value;
-        const equipo = document.getElementById('equipo').value;
-        const tarea = document.getElementById('tarea').value;
-
-        if (passwords[operario] && passwords[operario] !== password) {
-            passError.style.display = 'block';
-            return;
-        }
-        passError.style.display = 'none';
 
         const nuevoRegistro = {
-            operario,
-            equipo,
-            tarea,
+            operario: currentSession.driver,
+            equipo: currentSession.vehicle,
+            tarea: tareaSelect.value,
             cliente: document.getElementById('cliente').value || '-',
             direccion: document.getElementById('direccion').value || '-',
             autorizo: document.getElementById('autorizo').value || '-',
@@ -354,19 +417,22 @@
         };
 
         registros.unshift(nuevoRegistro);
-        if(registros.length > 15) registros.pop();
+        if (registros.length > 15) registros.pop();
 
-        localStorage.setItem('suelos_registros_v2', JSON.stringify(registros));
+        localStorage.setItem('suelos_registros_v3', JSON.stringify(registros));
         
         renderHistory();
-        form.reset();
-        dynamicInfo.style.display = 'none';
-        alert('¡Operación registrada con éxito!');
+        suelosForm.reset();
+        dynamicInfo.classList.add('hidden');
+        
+        goToStep(1);
+        showToast('¡Operación registrada con éxito!');
     });
 
+    // Renderizar Historial
     function renderHistory() {
         if (registros.length === 0) {
-            historyList.innerHTML = '<li class="history-item" style="color: #777; text-align: center;">No hay registros recientes.</li>';
+            historyList.innerHTML = '<li class="py-3 text-stone-400 text-center">No hay registros recientes.</li>';
             return;
         }
 
@@ -378,13 +444,31 @@
             if (reg.cliente !== '-') detalleExtra += ` | 👤 ${reg.cliente}`;
 
             const li = document.createElement('li');
-            li.className = 'history-item';
-            li.innerHTML = `<strong>${reg.operario}</strong> (${reg.equipo})<br>` +
-                           `<span class="badge">${reg.tarea}</span>` +
-                           `<span style="color: #333; font-size: 0.8rem;">${detalleExtra}</span><br>` +
-                           `<span style="color: #888; font-size: 0.75rem;">OT: ${reg.ordenTrabajo} | Dir: ${reg.direccion} | ${reg.fecha}</span>`;
+            li.className = 'py-3';
+            li.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <div>
+                        <strong class="text-stone-900">${reg.operario}</strong> 
+                        <span class="text-xs bg-stone-100 text-stone-700 font-semibold px-2 py-0.5 rounded ml-1">${reg.equipo}</span>
+                    </div>
+                    <span class="text-[10px] text-stone-400">${reg.fecha}</span>
+                </div>
+                <div class="mt-1">
+                    <span class="inline-block bg-amber-400 text-stone-900 text-xs font-bold px-2 py-0.5 rounded">${reg.tarea}</span>
+                    <span class="text-stone-600 text-xs ml-1">${detalleExtra}</span>
+                </div>
+                <div class="text-[11px] text-stone-500 mt-1">OT: ${reg.ordenTrabajo} | Dir: ${reg.direccion}</div>
+            `;
             historyList.appendChild(li);
         });
+    }
+
+    function showToast(message) {
+        toastText.innerText = message;
+        toastNotification.classList.remove('translate-y-20', 'opacity-0');
+        setTimeout(() => {
+            toastNotification.classList.add('translate-y-20', 'opacity-0');
+        }, 3500);
     }
 </script>
 
