@@ -206,7 +206,7 @@
 </div>
 
 <script>
-    // Configuración de datos de operarios y claves
+    // Credenciales de operarios
     const passwords = {
         "Miguel Coria": "1234",
         "Gustavo Girolimetto": "1234",
@@ -218,31 +218,32 @@
 
     const drivers = Object.keys(passwords);
 
+    // Listado de vehículos con las imágenes provistas
     const vehiclesTrucks = [
-        { name: "Scania CMP980", img: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&q=80" },
-        { name: "Ford IBG812", img: "https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=400&q=80" },
-        { name: "Ford FVD203", img: "https://images.unsplash.com/photo-1559297436-26f183cfbc62?w=400&q=80" },
-        { name: "Ford UIB827", img: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=400&q=80" },
-        { name: "Ford EMV701", img: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=400&q=80" }
+        { name: "Scania CMP980", img: "CMP980.webp" },
+        { name: "Ford IBG812", img: "IBG812.webp" },
+        { name: "Ford FVD203", img: "FVD203.webp" },
+        { name: "Ford UIB827", img: "UIV827.jpg" },
+        { name: "Ford EMV701", img: "EMV301.jpg" }
     ];
 
     const vehiclesMachines = [
-        { name: "Pala SEM", img: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&q=80" },
-        { name: "Pala Michigan", img: "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=400&q=80" },
+        { name: "Pala SEM", img: "palasem.jpg" },
+        { name: "Pala Michigan", img: "palamichigan.jpg" },
         { name: "Retropala Cat", img: "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=400&q=80" },
-        { name: "Retropala New Holland", img: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=80" },
+        { name: "Retropala New Holland", img: "retropalanewholland.jpg" },
         { name: "Retroexcavadora Komatsu", img: "https://images.unsplash.com/photo-1535732820297-1f0256d25683?w=400&q=80" },
-        { name: "Minicargadora Liangong", img: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400&q=80" },
-        { name: "Vibrocompactador Sakai", img: "https://images.unsplash.com/photo-1579482813154-1fc698b965f8?w=400&q=80" }
+        { name: "Minicargadora Liangong", img: "minicargadoraliangong.jpg" },
+        { name: "Vibrocompactador Sakai", img: "vibrocompactadorsakai.jpg" }
     ];
 
-    // Estado de sesión actual
+    // Estado actual de sesión
     let currentSession = {
         driver: null,
         vehicle: null
     };
 
-    let registros = JSON.parse(localStorage.getItem('suelos_registros_v3')) || [];
+    let registros = JSON.parse(localStorage.getItem('suelos_registros_v4')) || [];
 
     // Referencias DOM
     const driversListEl = document.getElementById('driversList');
@@ -267,7 +268,6 @@
 
     let pendingDriver = null;
 
-    // Inicialización al cargar la página
     window.addEventListener('DOMContentLoaded', () => {
         renderDrivers();
         renderVehicles();
@@ -275,7 +275,6 @@
         goToStep(1);
     });
 
-    // Renderizar botones de operarios
     function renderDrivers() {
         driversListEl.innerHTML = '';
         drivers.forEach(driver => {
@@ -294,7 +293,6 @@
         });
     }
 
-    // Renderizar vehículos con imágenes
     function renderVehicles() {
         vehiclesTrucksEl.innerHTML = '';
         vehiclesTrucks.forEach(v => {
@@ -310,8 +308,8 @@
     function createVehicleCard(vehicle) {
         return `
             <div onclick="selectVehicle('${vehicle.name}')" class="bg-stone-50 hover:bg-stone-900 hover:text-white text-stone-900 border border-stone-200 rounded-xl overflow-hidden cursor-pointer transition shadow-xs group flex flex-col">
-                <div class="h-28 overflow-hidden bg-stone-200 relative">
-                    <img src="${vehicle.img}" alt="${vehicle.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.src='https://placehold.co/400x200/111111/FFFFFF?text=GyE+Movimiento'">
+                <div class="h-32 overflow-hidden bg-stone-200 relative">
+                    <img src="${vehicle.img}" alt="${vehicle.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.src='https://placehold.co/400x200/111111/FFFFFF?text=${encodeURIComponent(vehicle.name)}'">
                     <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition"></div>
                 </div>
                 <div class="p-3 flex justify-between items-center">
@@ -322,7 +320,6 @@
         `;
     }
 
-    // Modal password logic
     function openPasswordModal(driver) {
         pendingDriver = driver;
         modalDriverName.innerText = driver;
@@ -350,7 +347,6 @@
         }
     }
 
-    // Selección de vehículo
     function selectVehicle(vehicleName) {
         currentSession.vehicle = vehicleName;
         selectedBadge.innerText = `Operario: ${currentSession.driver}`;
@@ -358,7 +354,6 @@
         goToStep(3);
     }
 
-    // Control de Pantallas / Pasos
     function goToStep(stepNumber) {
         document.querySelectorAll('.step-screen').forEach(s => s.classList.remove('active'));
         document.getElementById(`step${stepNumber}`).classList.add('active');
@@ -373,7 +368,6 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Lógica de Tareas Dinámicas
     tareaSelect.addEventListener('change', function() {
         const tarea = this.value;
         if (!tarea) {
@@ -397,7 +391,6 @@
         }
     });
 
-    // Envío del Formulario Final
     suelosForm.addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -419,7 +412,7 @@
         registros.unshift(nuevoRegistro);
         if (registros.length > 15) registros.pop();
 
-        localStorage.setItem('suelos_registros_v3', JSON.stringify(registros));
+        localStorage.setItem('suelos_registros_v4', JSON.stringify(registros));
         
         renderHistory();
         suelosForm.reset();
@@ -429,7 +422,6 @@
         showToast('¡Operación registrada con éxito!');
     });
 
-    // Renderizar Historial
     function renderHistory() {
         if (registros.length === 0) {
             historyList.innerHTML = '<li class="py-3 text-stone-400 text-center">No hay registros recientes.</li>';
