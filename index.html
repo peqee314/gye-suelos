@@ -56,7 +56,6 @@
             margin-bottom: 15px;
         }
 
-        /* Secciones ocultas para manejar los pasos */
         .step-section {
             display: none;
         }
@@ -120,7 +119,6 @@
             opacity: 0.8;
         }
 
-        /* Estilos para los botones de Choferes (Paso 1) */
         .drivers-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -156,7 +154,6 @@
             color: #888;
         }
 
-        /* Estilos compactos para los vehículos con imagen en celulares (Paso 2) */
         .vehicles-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -171,7 +168,7 @@
             overflow: hidden;
             box-shadow: 0 1px 3px rgba(0,0,0,0.03);
             display: flex;
-            flex-direction: row; /* Diseño horizontal para aprovechar mejor la pantalla del celular */
+            flex-direction: row;
             align-items: center;
         }
 
@@ -211,10 +208,6 @@
             white-space: nowrap;
         }
 
-        .select-vehicle-btn:hover {
-            opacity: 0.9;
-        }
-
         .section-title {
             font-size: 1rem;
             margin-bottom: 12px;
@@ -246,7 +239,6 @@
             border-radius: 6px;
         }
 
-        /* Modal para la contraseña */
         .modal {
             display: none;
             position: fixed;
@@ -273,6 +265,8 @@
         .history-list {
             list-style: none;
             margin-top: 8px;
+            max-height: 300px;
+            overflow-y: auto;
         }
 
         .history-item {
@@ -302,6 +296,13 @@
             margin-top: 4px;
             display: none;
         }
+        
+        .filter-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -321,21 +322,18 @@
     <!-- PASO 1: SELECCIÓN DE CHOFER -->
     <div id="step1" class="card step-section active">
         <div class="section-title">Seleccione su usuario (Chofer)</div>
-        <div class="drivers-grid" id="driversContainer">
-            <!-- Generado por JS -->
-        </div>
+        <div class="drivers-grid" id="driversContainer"></div>
+        <button type="button" onclick="openAdminModal()" style="background-color: #555; margin-top: 15px; font-size: 0.85rem; padding: 8px;">🔐 Ingreso Administrador</button>
     </div>
 
-    <!-- PASO 2: SELECCIÓN DE VEHÍCULO / MÁQUINA CON IMAGEN COMPACTA -->
+    <!-- PASO 2: SELECCIÓN DE VEHÍCULO / MÁQUINA -->
     <div id="step2" class="card step-section">
         <div class="user-info-bar">
             <span>Operario: <strong id="currentDriverDisplay"></strong></span>
             <button type="button" class="back-btn" onclick="goToStep(1)">Cambiar</button>
         </div>
         <div class="section-title">Seleccione Vehículo o Máquina</div>
-        <div class="vehicles-grid" id="vehiclesContainer">
-            <!-- Generado por JS -->
-        </div>
+        <div class="vehicles-grid" id="vehiclesContainer"></div>
     </div>
 
     <!-- PASO 3: FORMULARIO DE TAREA Y DATOS -->
@@ -367,7 +365,6 @@
                 </select>
             </div>
 
-            <!-- SECCIÓN DINÁMICA DE DATOS ADICIONALES -->
             <div id="dynamicInfo" class="dynamic-section">
                 <h3 id="dynamicTitle" style="font-size: 0.9rem; margin-bottom: 10px; color: #111;">Detalles de la tarea</h3>
                 
@@ -401,13 +398,11 @@
                     <input type="number" id="precio" placeholder="Opcional">
                 </div>
 
-                <!-- Campo exclusivo para Maquinaria -->
                 <div class="form-group" id="groupHoras" style="display: none;">
                     <label for="horas">Cantidad de Horas:</label>
                     <input type="number" step="0.5" id="horas" placeholder="Ej: 3.5">
                 </div>
 
-                <!-- Campo exclusivo para Viajes -->
                 <div class="form-group" id="groupCantidadMaterial" style="display: none;">
                     <label for="cantidadMaterial" id="labelCantidadMaterial">Cantidad (tn / m³):</label>
                     <input type="number" step="0.1" id="cantidadMaterial" placeholder="Ej: 15">
@@ -416,9 +411,45 @@
 
             <button type="submit">Registrar Operación</button>
         </form>
+        
+        <button type="button" onclick="openDriverHistory()" style="background-color: #2196F3; margin-top: 10px;">📋 Ver mis trabajos cargados</button>
     </div>
 
-    <!-- MODAL DE CONTRASEÑA -->
+    <!-- PANEL DE HISTORIAL / CONSULTA (OCULTO POR DEFECTO, SE ABRE SEGÚN ROL) -->
+    <div id="historyCard" class="card" style="display: none;">
+        <div class="user-info-bar">
+            <span id="historyTitle"><strong>Historial de Trabajos</strong></span>
+            <button type="button" class="back-btn" onclick="closeHistoryPanel()">Cerrar</button>
+        </div>
+        
+        <div id="filterSection" style="display: none; margin-bottom: 10px;">
+            <div class="filter-row">
+                <div>
+                    <label for="filterChofer">Chofer:</label>
+                    <select id="filterChofer" onchange="renderHistory()">
+                        <option value="">Todos los choferes</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="filterVehiculo">Vehículo:</label>
+                    <select id="filterVehiculo" onchange="renderHistory()">
+                        <option value="">Todos los vehículos</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="filterFecha">Fecha específica:</label>
+                <input type="date" id="filterFecha" onchange="renderHistory()">
+            </div>
+            <button type="button" onclick="clearFilters()" style="background-color: #6c757d; font-size: 0.8rem; padding: 6px;">Limpiar Filtros</button>
+        </div>
+
+        <ul id="historyList" class="history-list">
+            <li class="history-item" style="color: #777; text-align: center;">No hay registros.</li>
+        </ul>
+    </div>
+
+    <!-- MODAL DE CONTRASEÑA CHOFER -->
     <div id="passwordModal" class="modal">
         <div class="modal-content">
             <h3 style="margin-bottom: 12px; font-size: 1rem;">Contraseña de <span id="modalDriverName"></span></h3>
@@ -433,32 +464,32 @@
         </div>
     </div>
 
-    <!-- HISTORIAL RECIENTE -->
-    <div class="card">
-        <label>Registros recientes:</label>
-        <ul id="historyList" class="history-list">
-            <li class="history-item" style="color: #777; text-align: center;">No hay registros recientes.</li>
-        </ul>
+    <!-- MODAL DE CONTRASEÑA ADMIN -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 12px; font-size: 1rem;">Panel de Administrador</h3>
+            <div class="form-group">
+                <input type="password" id="adminPassword" placeholder="Contraseña de Administrador">
+                <div id="adminPassError" class="error-msg">Contraseña incorrecta. (Clave: admin123)</div>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 12px;">
+                <button type="button" onclick="closeAdminModal()" style="background-color: #ccc; margin-top:0;">Cancelar</button>
+                <button type="button" onclick="verifyAdminPassword()" style="margin-top:0;">Acceder</button>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
     const drivers = [
-        "Miguel Coria",
-        "Gustavo Girolimetto",
-        "Ariel Girolimetto",
-        "Alejandro Girolimetto",
-        "Ricardo Vera",
-        "Ariel Ingaramo"
+        "Miguel Coria", "Gustavo Girolimetto", "Ariel Girolimetto",
+        "Alejandro Girolimetto", "Ricardo Vera", "Ariel Ingaramo"
     ];
 
     const passwords = {
-        "Miguel Coria": "1234",
-        "Gustavo Girolimetto": "1234",
-        "Ariel Girolimetto": "1234",
-        "Alejandro Girolimetto": "1234",
-        "Ricardo Vera": "1234",
-        "Ariel Ingaramo": "1234"
+        "Miguel Coria": "1234", "Gustavo Girolimetto": "1234",
+        "Ariel Girolimetto": "1234", "Alejandro Girolimetto": "1234",
+        "Ricardo Vera": "1234", "Ariel Ingaramo": "1234"
     };
 
     const vehicles = [
@@ -478,13 +509,17 @@
 
     let selectedDriver = "";
     let selectedVehicle = "";
+    let viewingMode = ""; // 'driver' o 'admin'
 
     const driversContainer = document.getElementById('driversContainer');
     const vehiclesContainer = document.getElementById('vehiclesContainer');
     const passwordModal = document.getElementById('passwordModal');
+    const adminModal = document.getElementById('adminModal');
     const modalDriverName = document.getElementById('modalDriverName');
     const modalPassword = document.getElementById('modalPassword');
+    const adminPassword = document.getElementById('adminPassword');
     const passError = document.getElementById('passError');
+    const adminPassError = document.getElementById('adminPassError');
     const currentDriverDisplay = document.getElementById('currentDriverDisplay');
     const finalDriverDisplay = document.getElementById('finalDriverDisplay');
     const finalVehicleDisplay = document.getElementById('finalVehicleDisplay');
@@ -496,6 +531,12 @@
     const groupCantidadMaterial = document.getElementById('groupCantidadMaterial');
     const labelCantidadMaterial = document.getElementById('labelCantidadMaterial');
     const historyList = document.getElementById('historyList');
+    const historyCard = document.getElementById('historyCard');
+    const filterSection = document.getElementById('filterSection');
+    const historyTitle = document.getElementById('historyTitle');
+    const filterChofer = document.getElementById('filterChofer');
+    const filterVehiculo = document.getElementById('filterVehiculo');
+    const filterFecha = document.getElementById('filterFecha');
 
     let registros = JSON.parse(localStorage.getItem('suelos_registros_v3')) || [];
 
@@ -504,7 +545,7 @@
     function initApp() {
         renderDrivers();
         renderVehicles();
-        renderHistory();
+        populateFilterDropdowns();
     }
 
     function renderDrivers() {
@@ -535,6 +576,18 @@
         });
     }
 
+    function populateFilterDropdowns() {
+        filterChofer.innerHTML = '<option value="">Todos los choferes</option>';
+        drivers.forEach(d => {
+            filterChofer.innerHTML += `<option value="${d}">${d}</option>`;
+        });
+
+        filterVehiculo.innerHTML = '<option value="">Todos los vehículos</option>';
+        vehicles.forEach(v => {
+            filterVehiculo.innerHTML += `<option value="${v.name}">${v.name}</option>`;
+        });
+    }
+
     function openPasswordModal(driver) {
         selectedDriver = driver;
         modalDriverName.innerText = driver;
@@ -562,6 +615,33 @@
         }
     }
 
+    function openAdminModal() {
+        adminPassword.value = '';
+        adminPassError.style.display = 'none';
+        adminModal.style.display = 'flex';
+        adminPassword.focus();
+    }
+
+    function closeAdminModal() {
+        adminModal.style.display = 'none';
+    }
+
+    function verifyAdminPassword() {
+        // Clave de administrador por defecto (puedes cambiarla aquí)
+        if (adminPassword.value === "admin123") {
+            adminPassError.style.display = 'none';
+            closeAdminModal();
+            viewingMode = 'admin';
+            historyTitle.innerHTML = "<strong>Panel Administrador - Todos los Registros</strong>";
+            filterSection.style.display = 'block';
+            historyCard.style.display = 'block';
+            renderHistory();
+            historyCard.scrollIntoView({ behavior: 'smooth' });
+        } else {
+            adminPassError.style.display = 'block';
+        }
+    }
+
     function selectVehicle(vehicleName) {
         selectedVehicle = vehicleName;
         finalVehicleDisplay.innerText = vehicleName;
@@ -571,6 +651,7 @@
     function goToStep(stepNumber) {
         document.querySelectorAll('.step-section').forEach(sec => sec.classList.remove('active'));
         document.getElementById(`step${stepNumber}`).classList.add('active');
+        historyCard.style.display = 'none'; // Ocultar historial al navegar pasos
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -614,30 +695,61 @@
             precio: document.getElementById('precio').value || '-',
             horas: document.getElementById('horas').value || null,
             cantidadMaterial: document.getElementById('cantidadMaterial').value || null,
-            fecha: new Date().toLocaleString()
+            fecha: new Date().toLocaleString(),
+            rawDate: new Date().toISOString().split('T')[0] // Para filtrar por fecha fácil
         };
 
         registros.unshift(nuevoRegistro);
-        if(registros.length > 15) registros.pop();
-
         localStorage.setItem('suelos_registros_v3', JSON.stringify(registros));
         
-        renderHistory();
         form.reset();
         dynamicInfo.style.display = 'none';
         alert('¡Operación registrada con éxito!');
-        
         goToStep(1);
     });
 
+    function openDriverHistory() {
+        viewingMode = 'driver';
+        historyTitle.innerHTML = `<strong>Mis Trabajos - ${selectedDriver}</strong>`;
+        filterSection.style.display = 'none'; // El chofer no necesita filtros avanzados, solo ve lo suyo
+        historyCard.style.display = 'block';
+        renderHistory();
+        historyCard.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function closeHistoryPanel() {
+        historyCard.style.display = 'none';
+    }
+
+    function clearFilters() {
+        filterChofer.value = "";
+        filterVehiculo.value = "";
+        filterFecha.value = "";
+        renderHistory();
+    }
+
     function renderHistory() {
-        if (registros.length === 0) {
-            historyList.innerHTML = '<li class="history-item" style="color: #777; text-align: center;">No hay registros recientes.</li>';
+        let filtrados = [...registros];
+
+        if (viewingMode === 'driver') {
+            filtrados = filtrados.filter(reg => reg.operario === selectedDriver);
+        } else if (viewingMode === 'admin') {
+            const fChofer = filterChofer.value;
+            const fVehiculo = filterVehiculo.value;
+            const fFecha = filterFecha.value;
+
+            if (fChofer) filtrados = filtrados.filter(reg => reg.operario === fChofer);
+            if (fVehiculo) filtrados = filtrados.filter(reg => reg.equipo === fVehiculo);
+            if (fFecha) filtrados = filtrados.filter(reg => reg.rawDate === fFecha);
+        }
+
+        if (filtrados.length === 0) {
+            historyList.innerHTML = '<li class="history-item" style="color: #777; text-align: center;">No se encontraron registros.</li>';
             return;
         }
 
         historyList.innerHTML = '';
-        registros.forEach(reg => {
+        filtrados.forEach(reg => {
             let detalleExtra = '';
             if (reg.horas) detalleExtra += ` | ⏱️ ${reg.horas} hs`;
             if (reg.cantidadMaterial) detalleExtra += ` | 📦 ${reg.cantidadMaterial} un`;
