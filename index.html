@@ -5,39 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GyE - División Movimiento de Suelos</title>
     
-    <!-- SDKs de Firebase (Versión Modular) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCqhSttXPpa51TV1wOiOyYy-NYqM7EV8w0",
-            authDomain: "gyehormigon.firebaseapp.com",
-            projectId: "gyehormigon",
-            storageBucket: "gyehormigon.firebasestorage.app",
-            messagingSenderId: "1002093938030",
-            appId: "1:1002093938030:web:5b7a1e1ec4818895f2ad7f",
-            measurementId: "G-HGF98N5H95"
-        };
-
-        // Inicializar Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // Hacemos accesibles las funciones de Firebase globalmente para tu script
-        window.db = db;
-        window.collection = collection;
-        window.addDoc = addDoc;
-        window.getDocs = getDocs;
-        window.query = query;
-        window.where = where;
-        window.orderBy = orderBy;
-        
-        // Una vez cargado Firebase, inicializamos la app
-        if (typeof window.initAppFirebase === 'function') {
-            window.initAppFirebase();
-        }
-    </script>
+    <!-- Firebase SDKs (Versión Compat, igual que Hormigón) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <style>
         :root {
@@ -516,6 +486,20 @@
 </div>
 
 <script>
+    // Configuración de Firebase (Compat)
+    const firebaseConfig = {
+        apiKey: "AIzaSyCqhSttXPpa51TV1wOiOyYy-NYqM7EV8w0",
+        authDomain: "gyehormigon.firebaseapp.com",
+        projectId: "gyehormigon",
+        storageBucket: "gyehormigon.firebasestorage.app",
+        messagingSenderId: "1002093938030",
+        appId: "1:1002093938030:web:5b7a1e1ec4818895f2ad7f",
+        measurementId: "G-HGF98N5H95"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     const drivers = [
         "Miguel Coria", "Gustavo Girolimetto", "Ariel Girolimetto",
         "Alejandro Girolimetto", "Ricardo Vera", "Ariel Ingaramo"
@@ -574,12 +558,13 @@
     const filterVehiculo = document.getElementById('filterVehiculo');
     const filterFecha = document.getElementById('filterFecha');
 
-    // Función global que llama Firebase al iniciar
-    window.initAppFirebase = function() {
+    initApp();
+
+    function initApp() {
         renderDrivers();
         renderVehicles();
         populateFilterDropdowns();
-    };
+    }
 
     function renderDrivers() {
         driversContainer.innerHTML = '';
@@ -710,7 +695,7 @@
         }
     });
 
-    // Enviar datos a Firebase Firestore
+    // Envío de datos a Firebase Firestore con la sintaxis compact (compat)
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -736,19 +721,21 @@
             timestamp: Date.now()
         };
 
-        try {
-            await window.addDoc(window.collection(window.db, "registros_suelos"), nuevoRegistro);
-            alert('¡Operación registrada con éxito en la nube!');
-            form.reset();
-            dynamicInfo.style.display = 'none';
-            goToStep(1);
-        } catch (error) {
-            console.error("Error al guardar en Firebase: ", error);
-            alert("Hubo un error al guardar los datos. Verifique su conexión.");
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerText = "Registrar Operación";
-        }
+        db.collection("registros_suelos").add(nuevoRegistro)
+            .then(() => {
+                alert('¡Operación registrada con éxito en la nube!');
+                form.reset();
+                dynamicInfo.style.display = 'none';
+                goToStep(1);
+            })
+            .catch(error => {
+                console.error("Error al guardar en Firebase: ", error);
+                alert("Hubo un error al guardar los datos. Verifique su conexión.");
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Registrar Operación";
+            });
     });
 
     function openDriverHistory() {
@@ -771,19 +758,17 @@
         renderHistory();
     }
 
-    // Consultar datos desde Firestore
-    async function renderHistory() {
+    // Consulta de datos desde Firestore
+    function renderHistory() {
         historyList.innerHTML = '<li class="history-item" style="color: #777; text-align: center;">Cargando datos desde la nube...</li>';
         
-        try {
-            const querySnapshot = await window.getDocs(window.collection(window.db, "registros_suelos"));
+        db.collection("registros_suelos").get().then((querySnapshot) => {
             let registros = [];
             
             querySnapshot.forEach((doc) => {
                 registros.push(doc.data());
             });
 
-            // Ordenar por fecha más reciente primero
             registros.sort((a, b) => b.timestamp - a.timestamp);
 
             let filtrados = [...registros];
@@ -821,10 +806,10 @@
                 historyList.appendChild(li);
             });
 
-        } catch (error) {
+        }).catch((error) => {
             console.error("Error al obtener datos: ", error);
             historyList.innerHTML = '<li class="history-item" style="color: red; text-align: center;">Error al cargar los datos de Firebase.</li>';
-        }
+        });
     }
 </script>
 
