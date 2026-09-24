@@ -4,6 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GyE - División Movimiento de Suelos</title>
+    
+    <!-- SDKs de Firebase (Versión Modular) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhSttXPpa51TV1wOiOyYy-NYqM7EV8w0",
+            authDomain: "gyehormigon.firebaseapp.com",
+            projectId: "gyehormigon",
+            storageBucket: "gyehormigon.firebasestorage.app",
+            messagingSenderId: "1002093938030",
+            appId: "1:1002093938030:web:5b7a1e1ec4818895f2ad7f",
+            measurementId: "G-HGF98N5H95"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Hacemos accesibles las funciones de Firebase globalmente para tu script
+        window.db = db;
+        window.collection = collection;
+        window.addDoc = addDoc;
+        window.getDocs = getDocs;
+        window.query = query;
+        window.where = where;
+        window.orderBy = orderBy;
+        
+        // Una vez cargado Firebase, inicializamos la app
+        if (typeof window.initAppFirebase === 'function') {
+            window.initAppFirebase();
+        }
+    </script>
+
     <style>
         :root {
             --primary-black: #111111;
@@ -409,13 +444,13 @@
                 </div>
             </div>
 
-            <button type="submit">Registrar Operación</button>
+            <button type="submit" id="submitBtn">Registrar Operación</button>
         </form>
         
         <button type="button" onclick="openDriverHistory()" style="background-color: #2196F3; margin-top: 10px;">📋 Ver mis trabajos cargados</button>
     </div>
 
-    <!-- PANEL DE HISTORIAL / CONSULTA (OCULTO POR DEFECTO, SE ABRE SEGÚN ROL) -->
+    <!-- PANEL DE HISTORIAL / CONSULTA -->
     <div id="historyCard" class="card" style="display: none;">
         <div class="user-info-bar">
             <span id="historyTitle"><strong>Historial de Trabajos</strong></span>
@@ -445,7 +480,7 @@
         </div>
 
         <ul id="historyList" class="history-list">
-            <li class="history-item" style="color: #777; text-align: center;">No hay registros.</li>
+            <li class="history-item" style="color: #777; text-align: center;">Cargando registros...</li>
         </ul>
     </div>
 
@@ -509,7 +544,7 @@
 
     let selectedDriver = "";
     let selectedVehicle = "";
-    let viewingMode = ""; // 'driver' o 'admin'
+    let viewingMode = ""; 
 
     const driversContainer = document.getElementById('driversContainer');
     const vehiclesContainer = document.getElementById('vehiclesContainer');
@@ -525,6 +560,7 @@
     const finalVehicleDisplay = document.getElementById('finalVehicleDisplay');
 
     const form = document.getElementById('suelosForm');
+    const submitBtn = document.getElementById('submitBtn');
     const tareaSelect = document.getElementById('tarea');
     const dynamicInfo = document.getElementById('dynamicInfo');
     const groupHoras = document.getElementById('groupHoras');
@@ -538,15 +574,12 @@
     const filterVehiculo = document.getElementById('filterVehiculo');
     const filterFecha = document.getElementById('filterFecha');
 
-    let registros = JSON.parse(localStorage.getItem('suelos_registros_v3')) || [];
-
-    initApp();
-
-    function initApp() {
+    // Función global que llama Firebase al iniciar
+    window.initAppFirebase = function() {
         renderDrivers();
         renderVehicles();
         populateFilterDropdowns();
-    }
+    };
 
     function renderDrivers() {
         driversContainer.innerHTML = '';
@@ -627,7 +660,6 @@
     }
 
     function verifyAdminPassword() {
-        // Clave de administrador por defecto (puedes cambiarla aquí)
         if (adminPassword.value === "admin123") {
             adminPassError.style.display = 'none';
             closeAdminModal();
@@ -651,7 +683,7 @@
     function goToStep(stepNumber) {
         document.querySelectorAll('.step-section').forEach(sec => sec.classList.remove('active'));
         document.getElementById(`step${stepNumber}`).classList.add('active');
-        historyCard.style.display = 'none'; // Ocultar historial al navegar pasos
+        historyCard.style.display = 'none';
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -678,9 +710,13 @@
         }
     });
 
-    form.addEventListener('submit', function(e) {
+    // Enviar datos a Firebase Firestore
+    form.addEventListener('submit', async function(e) {
         e.preventDefault();
         
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Guardando en la nube...";
+
         const tarea = document.getElementById('tarea').value;
 
         const nuevoRegistro = {
@@ -696,22 +732,29 @@
             horas: document.getElementById('horas').value || null,
             cantidadMaterial: document.getElementById('cantidadMaterial').value || null,
             fecha: new Date().toLocaleString(),
-            rawDate: new Date().toISOString().split('T')[0] // Para filtrar por fecha fácil
+            rawDate: new Date().toISOString().split('T')[0],
+            timestamp: Date.now()
         };
 
-        registros.unshift(nuevoRegistro);
-        localStorage.setItem('suelos_registros_v3', JSON.stringify(registros));
-        
-        form.reset();
-        dynamicInfo.style.display = 'none';
-        alert('¡Operación registrada con éxito!');
-        goToStep(1);
+        try {
+            await window.addDoc(window.collection(window.db, "registros_suelos"), nuevoRegistro);
+            alert('¡Operación registrada con éxito en la nube!');
+            form.reset();
+            dynamicInfo.style.display = 'none';
+            goToStep(1);
+        } catch (error) {
+            console.error("Error al guardar en Firebase: ", error);
+            alert("Hubo un error al guardar los datos. Verifique su conexión.");
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Registrar Operación";
+        }
     });
 
     function openDriverHistory() {
         viewingMode = 'driver';
         historyTitle.innerHTML = `<strong>Mis Trabajos - ${selectedDriver}</strong>`;
-        filterSection.style.display = 'none'; // El chofer no necesita filtros avanzados, solo ve lo suyo
+        filterSection.style.display = 'none';
         historyCard.style.display = 'block';
         renderHistory();
         historyCard.scrollIntoView({ behavior: 'smooth' });
@@ -728,41 +771,60 @@
         renderHistory();
     }
 
-    function renderHistory() {
-        let filtrados = [...registros];
+    // Consultar datos desde Firestore
+    async function renderHistory() {
+        historyList.innerHTML = '<li class="history-item" style="color: #777; text-align: center;">Cargando datos desde la nube...</li>';
+        
+        try {
+            const querySnapshot = await window.getDocs(window.collection(window.db, "registros_suelos"));
+            let registros = [];
+            
+            querySnapshot.forEach((doc) => {
+                registros.push(doc.data());
+            });
 
-        if (viewingMode === 'driver') {
-            filtrados = filtrados.filter(reg => reg.operario === selectedDriver);
-        } else if (viewingMode === 'admin') {
-            const fChofer = filterChofer.value;
-            const fVehiculo = filterVehiculo.value;
-            const fFecha = filterFecha.value;
+            // Ordenar por fecha más reciente primero
+            registros.sort((a, b) => b.timestamp - a.timestamp);
 
-            if (fChofer) filtrados = filtrados.filter(reg => reg.operario === fChofer);
-            if (fVehiculo) filtrados = filtrados.filter(reg => reg.equipo === fVehiculo);
-            if (fFecha) filtrados = filtrados.filter(reg => reg.rawDate === fFecha);
+            let filtrados = [...registros];
+
+            if (viewingMode === 'driver') {
+                filtrados = filtrados.filter(reg => reg.operario === selectedDriver);
+            } else if (viewingMode === 'admin') {
+                const fChofer = filterChofer.value;
+                const fVehiculo = filterVehiculo.value;
+                const fFecha = filterFecha.value;
+
+                if (fChofer) filtrados = filtrados.filter(reg => reg.operario === fChofer);
+                if (fVehiculo) filtrados = filtrados.filter(reg => reg.equipo === fVehiculo);
+                if (fFecha) filtrados = filtrados.filter(reg => reg.rawDate === fFecha);
+            }
+
+            if (filtrados.length === 0) {
+                historyList.innerHTML = '<li class="history-item" style="color: #777; text-align: center;">No se encontraron registros.</li>';
+                return;
+            }
+
+            historyList.innerHTML = '';
+            filtrados.forEach(reg => {
+                let detalleExtra = '';
+                if (reg.horas) detalleExtra += ` | ⏱️ ${reg.horas} hs`;
+                if (reg.cantidadMaterial) detalleExtra += ` | 📦 ${reg.cantidadMaterial} un`;
+                if (reg.cliente !== '-') detalleExtra += ` | 👤 ${reg.cliente}`;
+
+                const li = document.createElement('li');
+                li.className = 'history-item';
+                li.innerHTML = `<strong>${reg.operario}</strong> (${reg.equipo})<br>` +
+                               `<span class="badge">${reg.tarea}</span>` +
+                               `<span style="color: #333; font-size: 0.75rem;">${detalleExtra}</span><br>` +
+                               `<span style="color: #888; font-size: 0.7rem;">OT: ${reg.ordenTrabajo} | Dir: ${reg.direccion} | ${reg.fecha}</span>`;
+                historyList.appendChild(li);
+            });
+
+        } catch (error) {
+            console.error("Error al obtener datos: ", error);
+            historyList.innerHTML = '<li class="history-item" style="color: red; text-align: center;">Error al cargar los datos de Firebase.</li>';
         }
-
-        if (filtrados.length === 0) {
-            historyList.innerHTML = '<li class="history-item" style="color: #777; text-align: center;">No se encontraron registros.</li>';
-            return;
-        }
-
-        historyList.innerHTML = '';
-        filtrados.forEach(reg => {
-            let detalleExtra = '';
-            if (reg.horas) detalleExtra += ` | ⏱️ ${reg.horas} hs`;
-            if (reg.cantidadMaterial) detalleExtra += ` | 📦 ${reg.cantidadMaterial} un`;
-            if (reg.cliente !== '-') detalleExtra += ` | 👤 ${reg.cliente}`;
-
-            const li = document.createElement('li');
-            li.className = 'history-item';
-            li.innerHTML = `<strong>${reg.operario}</strong> (${reg.equipo})<br>` +
-                           `<span class="badge">${reg.tarea}</span>` +
-                           `<span style="color: #333; font-size: 0.75rem;">${detalleExtra}</span><br>` +
-                           `<span style="color: #888; font-size: 0.7rem;">OT: ${reg.ordenTrabajo} | Dir: ${reg.direccion} | ${reg.fecha}</span>`;
-            historyList.appendChild(li);
-        });
     }
 </script>
 
